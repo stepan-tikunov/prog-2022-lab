@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("long")
 /**
  * Class that generates {@code Long} ids by incrementing last used id.
  */
+@JsonTypeName("long")
 public class LongIdSupplier implements IdSupplier<Long> {
 	private Long lastUsedId;
 

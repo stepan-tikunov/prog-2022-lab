@@ -17,11 +17,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
 import edu.ifmo.tikunov.lab4.validate.ConstraintValidator;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "type")
-@JsonSubTypes({
-		@JsonSubTypes.Type(value = ArrayDequeManager.class, name = "array_deque"),
-		@JsonSubTypes.Type(value = MyArrayDequeManager.class, name = "custom_array_deque")
-})
 /**
  * Class that has all essential methods to
  * manage collection.
@@ -30,6 +25,11 @@ import edu.ifmo.tikunov.lab4.validate.ConstraintValidator;
  * @param	<K> element id type
  * @see		ArrayDequeManager
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.PROPERTY, property = "type")
+@JsonSubTypes({
+		@JsonSubTypes.Type(value = ArrayDequeManager.class, name = "array_deque"),
+		@JsonSubTypes.Type(value = MyArrayDequeManager.class, name = "custom_array_deque")
+})
 public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K> & CreationDateSpecifiable, K extends Comparable<K>> {
 	private IdSupplier<K> idSupplier;
 	private LocalDateTime creationDate;
