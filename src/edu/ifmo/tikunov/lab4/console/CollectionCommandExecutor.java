@@ -144,7 +144,6 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 					@Override
 					public void execute(Object[] args) throws ExitSignal {
 						storage.save(collection);
-						System.out.println("The collection was saved to " + storage.toString() + ".");
 					}
 				});
 
