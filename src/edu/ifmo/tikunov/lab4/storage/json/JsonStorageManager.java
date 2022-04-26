@@ -34,6 +34,7 @@ public class JsonStorageManager<E extends Comparable<E> & Identifiable<K> & Crea
 		try {
 			String json = converter.serialize(collection);
 			file.write(json);
+			System.out.println("The collection was saved to " + toString());
 		} catch (JacksonException e) {
 			System.err.println("Couldn't convert collection to json (probably some mistakes in parser?)");
 			System.err.println("Parser message: " + e.getMessage());
