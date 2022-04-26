@@ -29,7 +29,7 @@ public class CommandExecutor {
 				commandBuffer.add(command);
 			}
 		} else {
-			throw new ExitSignal("Got delimiter. Exiting", 0);
+			throw new ExitSignal("Got EOF marker. Exiting", 0);
 		}
 	}
 
@@ -45,7 +45,6 @@ public class CommandExecutor {
 		}
 	}
 
-	
 	/**
 	 * Executes the command from a string.
 	 *
