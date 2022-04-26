@@ -74,7 +74,15 @@ public class BufferedFileManager implements FileManager {
 		return file.getAbsolutePath();
 	}
 
-	public BufferedFileManager(String filename) {
+	public BufferedFileManager(String filename, String defaultFileName) {
 		file = new File(filename);
+		try {
+		if (!file.exists() && !file.createNewFile())
+			file = new File(defaultFileName);
+			System.err.println("File \"" + filename + "\" doesn't exist and cannot be created, using default file (\"" + defaultFileName + "\")");
+		} catch (IOException e) {
+			file = new File(defaultFileName);
+			System.err.println("File \"" + filename + "\" doesn't exist and cannot be created, using default file (\"" + defaultFileName + "\")");
+		}
 	}
 }

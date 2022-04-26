@@ -1,5 +1,6 @@
 package edu.ifmo.tikunov.lab4;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Map;
 
@@ -22,7 +23,8 @@ public class Main {
 			filename = "collection.json";
 		}
 
-		FileManager file = new BufferedFileManager(filename);
+		FileManager file;
+		file = new BufferedFileManager(filename, "collection.json");
 		JsonStorageManager<SpaceMarine, Long> storage = new JsonStorageManager<SpaceMarine, Long>(file,
 				ArrayDequeManager.class, SpaceMarine.class, Long.class);
 		LongIdSupplier idSupplier = new LongIdSupplier();
