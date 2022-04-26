@@ -13,7 +13,13 @@ public class MyCollectionCommandExecutor extends CollectionCommandExecutor<Space
 
 	public MyCollectionCommandExecutor(MyArrayDequeManager empty, StorageManager<SpaceMarine, Long> storage) {
 		super(empty, storage, SpaceMarine.class, Long.class);
-		this.collection = (MyArrayDequeManager) super.collection;
+		try {
+			this.collection = (MyArrayDequeManager) super.collection;
+		} catch (ClassCastException e) {
+			System.err.println("Couldn't parse collection. Created new empty collection");
+			this.collection = empty;
+			super.collection = empty;
+		}
 
 		addCommand(new Command("print_field_ascending_weapon_type",
 				"prints sorted values of \"weapon_type\" of each element in the collection",
