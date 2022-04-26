@@ -1,0 +1,9 @@
+edu.ifmo.tikunov.lab4
+edu.ifmo.tikunov.lab4.collection
+edu.ifmo.tikunov.lab4.composite
+edu.ifmo.tikunov.lab4.console
+edu.ifmo.tikunov.lab4.model
+edu.ifmo.tikunov.lab4.storage
+edu.ifmo.tikunov.lab4.storage.file
+edu.ifmo.tikunov.lab4.storage.json
+edu.ifmo.tikunov.lab4.validate

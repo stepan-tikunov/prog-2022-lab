@@ -1,0 +1,9 @@
+{
+  "type" : "array_deque",
+  "id_supplier" : {
+    "type" : "long",
+    "last_used_id" : -1
+  },
+  "creation_date" : "2022-04-25T20:25:34.1224791",
+  "collection" : [ ]
+}

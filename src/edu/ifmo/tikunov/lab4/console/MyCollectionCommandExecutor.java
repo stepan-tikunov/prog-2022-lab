@@ -1,0 +1,27 @@
+package edu.ifmo.tikunov.lab4.console;
+
+import edu.ifmo.tikunov.lab4.collection.MyArrayDequeManager;
+import edu.ifmo.tikunov.lab4.model.SpaceMarine;
+import edu.ifmo.tikunov.lab4.storage.StorageManager;
+
+/**
+ * {@code CollectionCommandExecutor} with some extra commands that are
+ * only possible to implement if element type is {@code SpaceMarine}.
+ */
+public class MyCollectionCommandExecutor extends CollectionCommandExecutor<SpaceMarine, Long> {
+	protected MyArrayDequeManager collection;
+
+	public MyCollectionCommandExecutor(MyArrayDequeManager empty, StorageManager<SpaceMarine, Long> storage) {
+		super(empty, storage, SpaceMarine.class, Long.class);
+		this.collection = (MyArrayDequeManager) super.collection;
+
+		addCommand(new Command("print_field_ascending_weapon_type",
+				"prints sorted values of \"weapon_type\" of each element in the collection",
+				new ParameterList(this::input)) {
+			@Override
+			protected void execute(Object[] args) throws ExitSignal {
+				System.out.println(collection.printFieldAscendingWeaponType());
+			}
+		});
+	}
+}
