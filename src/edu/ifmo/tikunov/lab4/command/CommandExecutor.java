@@ -42,8 +42,9 @@ public class CommandExecutor {
 			try {
 				command.execute(query.params);
 			} catch (OutOfMemoryError e) {
+				ExecutionQuery top = queries.peek();
 				queries.clear();
-				System.err.println("Command buffer was cleared because program ran out of memory");
+				queries.add(top);
 			}
 		}
 	}
