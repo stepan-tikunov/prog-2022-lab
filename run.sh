@@ -2,4 +2,4 @@
 
 cd "$(dirname "$0")" ;
 
-java -jar bin/app.jar -Xmx128M -Xms128M ;
+java -jar -Xmx128M -Xms128M bin/app.jar ;

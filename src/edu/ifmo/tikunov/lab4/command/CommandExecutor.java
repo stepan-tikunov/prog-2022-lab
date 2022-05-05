@@ -42,9 +42,8 @@ public class CommandExecutor {
 			try {
 				command.execute(query.params);
 			} catch (OutOfMemoryError e) {
-				ExecutionQuery top = queries.peek();
 				queries.clear();
-				queries.add(top);
+				queries.add(query);
 			}
 		}
 	}
