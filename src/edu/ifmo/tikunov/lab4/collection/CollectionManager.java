@@ -1,11 +1,10 @@
 package edu.ifmo.tikunov.lab4.collection;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,8 +82,9 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	 *
 	 * @param id	id of element to update
 	 * @param e		element to replace old
+	 * @return {@code true} if element was updated
 	 */
-	public abstract void update(K id, E e);
+	public abstract boolean update(K id, E e);
 
 	@JsonSetter("id_supplier")
 	public void setIdSupplier(IdSupplier<K> idSupplier) {
@@ -126,26 +126,21 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	public void validate() {
 		Set<K> ids = new HashSet<>();
 
-		List<E> toRemove = new ArrayList<>();
-
-		for (E element : collection) {
+		for (Iterator<E> i = collection.iterator(); i.hasNext();) {
+			E element = i.next();
 			String validationResult = ConstraintValidator.validate(element, element.getClass());
 			if (!validationResult.equals("")) {
-				toRemove.add(element);
-				System.err.print("The element with id=" + element.getId().toString() + ": " + validationResult);
-				System.err.println("It was removed from the collection.");
+				i.remove();
+				System.err.print("The element with id=" + String.valueOf(element.getId()) + " was removed: " + validationResult);
 			} else if (ids.contains(element.getId())) {
-				toRemove.add(element);
-				System.err.println("The element with id=" + element.getId().toString()
-						+ " was removed from the collection because there already is an element with such id.");
+				i.remove();
+				System.err.println("The element with id=" + String.valueOf(element.getId())
+						+ " was removed because its id is not unique.");
 			} else {
 				ids.add(element.getId());
 				idSupplier.update(element.getId());
 			}
 		}
-
-		toRemove.stream()
-				.forEach(collection::remove);
 	}
 
 	/**
@@ -165,7 +160,7 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	 * @return	{@code true} if element was added
 	 */
 	public boolean addIfMax(E e) {
-		if (e.compareTo(collection.stream().max(COMPARATOR).orElse(null)) >= 0) {
+		if (collection.stream().max(COMPARATOR).map(max -> e.compareTo(max) >= 0).orElse(true)) {
 			add(e);
 			return true;
 		}
@@ -179,7 +174,7 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	 * @return	{@code true} if element was added
 	 */
 	public boolean addIfMin(E e) {
-		if (e.compareTo(collection.stream().min(COMPARATOR).orElse(null)) <= 0) {
+		if (collection.stream().min(COMPARATOR).map(max -> e.compareTo(max) <= 0).orElse(true)) {
 			add(e);
 			return true;
 		}
@@ -244,6 +239,8 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	 * @return information about groups
 	 */
 	public String groupCountingById() {
+		if (collection.isEmpty()) return "The collection is empty.";
+
 		return collection.stream()
 				.sorted(ID_COMPARATOR)
 				.map(e -> "id=" + e.getId().toString() + ": 1 element")

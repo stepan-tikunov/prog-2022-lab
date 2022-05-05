@@ -9,8 +9,8 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import edu.ifmo.tikunov.lab4.console.BadParametersException;
-import edu.ifmo.tikunov.lab4.console.SimpleParser;
+import edu.ifmo.tikunov.lab4.command.BadParametersException;
+import edu.ifmo.tikunov.lab4.command.SimpleParser;
 import edu.ifmo.tikunov.lab4.validate.ConstraintValidator;
 import edu.ifmo.tikunov.lab4.validate.Description;
 import edu.ifmo.tikunov.lab4.validate.FieldInfo;
@@ -156,5 +156,27 @@ public final class CompositeParser {
         } catch (Exception e) {
             throw new BadParametersException("");
         }
+    }
+
+    public static String stringValue(Object obj) {
+        if (obj == null) return "null";
+
+        if (SimpleParser.isSimple(obj.getClass())) {
+            return SimpleParser.stringValue(obj);
+        }
+
+        return ConstraintValidator.getFieldMap(obj.getClass()).values().stream()
+            .map(f -> {
+                    try {
+                        return SimpleParser.isSimple(f.field.getType()) ?
+                            f.name + "=" + SimpleParser.stringValue(f.field.get(obj))
+                        :
+                            f.name + "=" + stringValue(f.field.get(obj));
+                    } catch (IllegalAccessException e) {
+                        // should never happen
+                        return "";
+                    }
+                }
+            ).collect(Collectors.joining(", ", obj.getClass().getSimpleName() + "{", "}"));
     }
 }

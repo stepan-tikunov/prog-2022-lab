@@ -1,4 +1,4 @@
-package edu.ifmo.tikunov.lab4.console;
+package edu.ifmo.tikunov.lab4.command;
 
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -22,7 +23,8 @@ public class ParameterList {
     private final String[] simpleDescriptions;
     private final Boolean[] isSimpleInitially;
     private final CommandParameter[] parameters;
-    private final InputFunction input;
+
+    private Scanner in;
 
     /**
      * Returns whether the string is of type
@@ -37,6 +39,15 @@ public class ParameterList {
             return true;
         } catch (BadParametersException e) {
             return false;
+        }
+    }
+
+    private String getInput(String description) throws ExitSignal {
+        System.out.print("Enter " + description + ": ");
+        if (in.hasNextLine()) {
+            return in.nextLine();
+        } else {
+            throw new ExitSignal("Command interrupted (^D)", 1);
         }
     }
 
@@ -69,7 +80,7 @@ public class ParameterList {
                 .filter(p -> SimpleParser.isSimple(p.type))
                 .collect(Collectors.toList())
                 .toArray(new CommandParameter[0]);
-        return new ParameterList(input, onlySimpleTypes);
+        return new ParameterList(onlySimpleTypes);
     }
 
     /**
@@ -98,21 +109,6 @@ public class ParameterList {
     }
 
     /**
-     * Parses parameters from string.
-     *
-     * @param   params  string with parameters
-     * @return  parsed parameters
-     * @throws  BadParametersException  if string doesn't match parameter list
-     */
-    public Object[] parse(String params) throws BadParametersException {
-        return parse(
-                Stream.of(params.split("\\s+"))
-                        .filter(s -> !s.trim().equals(""))
-                        .collect(Collectors.toList())
-                        .toArray(new String[0]));
-    }
-
-    /**
      * Parses simple parameters from string and
      * additionaly asks user for composite parameters.
      *
@@ -123,27 +119,50 @@ public class ParameterList {
      */
     public Object[] parseInteractive(String params) throws ExitSignal, BadParametersException {
         ParameterList simpleParamList = onlySimple();
-        Object[] simpleParsed = simpleParamList.parse(params);
+        if (!simpleParamList.validate(params)) throw new BadParametersException("Bad parameters");
+        String[] paramsSplit = Stream.of(params.split("\\s+"))
+            .filter(s -> !s.trim().equals(""))
+            .collect(Collectors.toList())
+            .toArray(new String[0]);
 
-        String[] stringValues = new String[simpleTypes.length];
+        String[] allParams = new String[simpleTypes.length];
 
         for (int i = 0, j = 0; i < simpleTypes.length; ++i) {
             if (isSimpleInitially[i]) {
-                stringValues[i] = SimpleParser.stringValue(simpleParsed[j], simpleTypes[i]);
+                allParams[i] = paramsSplit[j];
                 ++j;
             } else {
-                boolean validated = false;
-                while (!validated) {
-                    stringValues[i] = input.accept(simpleDescriptions[i]);
-                    String message = ConstraintValidator.validate(stringValues[i], ctorParameters[i], simpleTypes[i]);
-                    validated = message.equals("");
-                    if (!validated)
+                boolean validInput = false;
+                while (!validInput) {
+                    allParams[i] = getInput(simpleDescriptions[i]);
+                    String message = ConstraintValidator.validateParameter(allParams[i], ctorParameters[i], simpleTypes[i]);
+                    validInput = message.equals("");
+                    if (!validInput)
                         System.err.print(message);
                 }
             }
         }
 
-        return parse(stringValues);
+        return parse(allParams);
+    }
+
+    /**
+     * Parses parameters from string.
+     *
+     * @param   params  string with parameters
+     * @return  parsed parameters
+     * @throws  BadParametersException  if string doesn't match parameter list
+     */
+    public Object[] parse(String params) throws BadParametersException, ExitSignal {
+        String[] paramsArray = Stream.of(params.split("\\s+"))
+            .filter(s -> !s.trim().equals(""))
+            .collect(Collectors.toList())
+            .toArray(new String[0]);
+        try {
+            return parse(paramsArray);
+        } catch (BadParametersException e) {
+            return parseInteractive(params);
+        }
     }
 
     @Override
@@ -163,7 +182,8 @@ public class ParameterList {
         return false;
     }
 
-    public ParameterList(InputFunction input, CommandParameter... params) {
+    public ParameterList(CommandParameter... params) {
+        in = new Scanner(System.in);
         parameters = params;
 
         List<Parameter> ctorParameters = Stream.of(params)
@@ -186,7 +206,6 @@ public class ParameterList {
                         : CompositeParser.expandComposite(p.type).stream().map(any -> false))
                 .collect(Collectors.toList());
 
-        this.input = input;
         this.ctorParameters = ctorParameters.toArray(new Parameter[0]);
         this.simpleDescriptions = simpleDescriptions.toArray(new String[0]);
         this.simpleTypes = simpleTypes.toArray(new Class<?>[0]);

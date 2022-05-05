@@ -2,69 +2,40 @@
   "type" : "custom_array_deque",
   "id_supplier" : {
     "type" : "long",
-    "last_used_id" : 101
+    "last_used_id" : 3
   },
-  "creation_date" : "2022-04-25T21:14:20.8596918",
+  "creation_date" : "2022-05-05T05:59:32.8848123",
   "collection" : [ {
-    "id" : 1,
-    "name" : "Space Marine 1",
-    "coordinates" : {
-      "x" : 123.0,
-      "y" : 456.0
-    },
-    "creation_date" : "2022-04-25T21:15:16.8583657",
-    "health" : 1000.0,
-    "category" : "ASSAULT",
-    "weapon_type" : "BOLT_RIFLE",
-    "melee_weapon" : "POWER_BLADE",
-    "chapter" : {
-      "name" : "Chapter 1",
-      "parent_legion" : "Foo"
-    }
-  }, {
     "id" : 2,
-    "name" : "Space Marine 2",
-    "coordinates" : {
-      "x" : 789.0,
-      "y" : 987.0
-    },
-    "creation_date" : "2022-04-25T21:16:06.2359365",
-    "health" : 1500.0,
-    "category" : "DREADNOUGHT",
-    "weapon_type" : "HEAVY_BOLTGUN",
-    "melee_weapon" : "POWER_FIST",
-    "chapter" : {
-      "name" : "Chapter 2",
-      "parent_legion" : "Some parent legion"
-    }
-  }, {
-    "id" : 100,
-    "name" : "Space Marine 3",
-    "coordinates" : {
-      "x" : 322.0,
-      "y" : 1337.0
-    },
-    "creation_date" : "2022-04-25T21:42:53.0033476",
-    "health" : 148.0,
-    "category" : "DREADNOUGHT",
-    "weapon_type" : "COMBI_FLAMER",
-    "melee_weapon" : null,
-    "chapter" : null
-  }, {
-    "id" : 101,
     "name" : "asd",
     "coordinates" : {
-      "x" : 123.0,
-      "y" : 41.0
+      "x" : 1.0,
+      "y" : 123.0
     },
-    "creation_date" : "2022-04-25T23:42:24.4716017",
-    "health" : 12315.0,
+    "creation_date" : "2022-05-05T06:50:42.00508",
+    "health" : 321.0,
     "category" : "ASSAULT",
     "weapon_type" : "GRAV_GUN",
     "melee_weapon" : "POWER_FIST",
     "chapter" : {
-      "name" : "aksdf",
-      "parent_legion" : "n"
+      "name" : "jjj",
+      "parent_legion" : "jjj"
+    }
+  }, {
+    "id" : 3,
+    "name" : "a",
+    "coordinates" : {
+      "x" : null,
+      "y" : null
+    },
+    "creation_date" : "2022-05-05T06:57:19.9963522",
+    "health" : 1.0,
+    "category" : "ASSAULT",
+    "weapon_type" : null,
+    "melee_weapon" : null,
+    "chapter" : {
+      "name" : "null",
+      "parent_legion" : ""
     }
   } ]
 }

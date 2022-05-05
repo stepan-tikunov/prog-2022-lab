@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 
 import edu.ifmo.tikunov.lab4.composite.Composite;
 import edu.ifmo.tikunov.lab4.composite.CompositeConstructor;
+import edu.ifmo.tikunov.lab4.composite.CompositeParser;
 import edu.ifmo.tikunov.lab4.validate.Constraint;
 import edu.ifmo.tikunov.lab4.validate.ConstraintType;
 import edu.ifmo.tikunov.lab4.validate.Constraints;
@@ -17,8 +18,8 @@ public class Chapter {
 
 	@FieldName("name")
 	@Constraints({
-			@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = "null"),
-			@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = "")
+		@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = ""),
+		@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = " ")
 	})
 	@Description("name")
 	private String name; // !null, !""
@@ -48,9 +49,7 @@ public class Chapter {
 	}
 
 	public String toString() {
-		return "Chapter<" +
-				"name=" + name + ", " +
-				"parent_legion=" + parentLegion + ">";
+		return CompositeParser.stringValue(this);
 	}
 
 	public Chapter() {

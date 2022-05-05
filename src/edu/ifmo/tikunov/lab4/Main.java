@@ -6,7 +6,7 @@ import java.util.Map;
 import edu.ifmo.tikunov.lab4.collection.ArrayDequeManager;
 import edu.ifmo.tikunov.lab4.collection.LongIdSupplier;
 import edu.ifmo.tikunov.lab4.collection.MyArrayDequeManager;
-import edu.ifmo.tikunov.lab4.console.MyCollectionCommandExecutor;
+import edu.ifmo.tikunov.lab4.command.MyCollectionCommandExecutor;
 import edu.ifmo.tikunov.lab4.model.SpaceMarine;
 import edu.ifmo.tikunov.lab4.storage.file.BufferedFileManager;
 import edu.ifmo.tikunov.lab4.storage.file.FileManager;

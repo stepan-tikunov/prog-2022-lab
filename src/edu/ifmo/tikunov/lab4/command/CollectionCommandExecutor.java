@@ -1,4 +1,4 @@
-package edu.ifmo.tikunov.lab4.console;
+package edu.ifmo.tikunov.lab4.command;
 
 import edu.ifmo.tikunov.lab4.collection.CollectionManager;
 import edu.ifmo.tikunov.lab4.collection.CreationDateSpecifiable;
@@ -18,16 +18,16 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 	protected StorageManager<E, K> storage;
 
 	@SuppressWarnings("unchecked")
-	public CollectionCommandExecutor(CollectionManager<E, K> empty, StorageManager<E, K> storage, Class<E> elementType,
+	public CollectionCommandExecutor(QueryGenerator in, CollectionManager<E, K> empty, StorageManager<E, K> storage, Class<E> elementType,
 			Class<K> idType) {
-		super();
+		super(in);
 		this.elementType = elementType;
 		this.idType = idType;
 		this.storage = storage;
 		collection = storage.read(empty);
 
 		addCommand(new Command("add", "adds new " + elementType.getSimpleName() + " to the collection",
-				new ParameterList(this::input, new CommandParameter("new element", elementType))) {
+				new ParameterList(new CommandParameter("new element", elementType))) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				E newElement = (E) args[0];
@@ -38,7 +38,7 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 
 		addCommand(new Command("add_if_min",
 				"adds new " + elementType.getSimpleName() + " to the collection if it is less than other elements",
-				new ParameterList(this::input, new CommandParameter("new element", elementType))) {
+				new ParameterList(new CommandParameter("new element", elementType))) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				E newElement = (E) args[0];
@@ -53,7 +53,7 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 
 		addCommand(new Command("add_if_max",
 				"adds new " + elementType.getSimpleName() + " to the collection if it is more than other elements",
-				new ParameterList(this::input, new CommandParameter("new element", elementType))) {
+				new ParameterList(new CommandParameter("new element", elementType))) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				E newElement = (E) args[0];
@@ -66,18 +66,21 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 			}
 		});
 
-		addCommand(new Command("update", "updates the element with specified id", new ParameterList(this::input,
-				new CommandParameter("id", idType), new CommandParameter("new element", elementType))) {
+		addCommand(new Command("update", "updates the element with specified id", new ParameterList(new CommandParameter("id", idType), new CommandParameter("new element", elementType))) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				K id = (K) args[0];
 				E newElement = (E) args[1];
-				collection.update(id, newElement);
+				if (collection.update(id, newElement)) {
+					System.out.println("The element was updated.");
+				} else {
+					System.err.println("The element wasn't updated.");
+				}
 			}
 		});
 
 		addCommand(new Command("remove", "removes the element with specified id",
-				new ParameterList(this::input, new CommandParameter("id", idType))) {
+				new ParameterList(new CommandParameter("id", idType))) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				K id = (K) args[0];
@@ -91,7 +94,7 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 
 		addCommand(new Command("remove_lower",
 				"removes all elements that are less than the specified " + elementType.getSimpleName(),
-				new ParameterList(this::input, new CommandParameter("new element", elementType))) {
+				new ParameterList(new CommandParameter("new element", elementType))) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				E element = (E) args[0];
@@ -107,7 +110,7 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 		});
 
 		addCommand(
-				new Command("info", "shows the information about current collection", new ParameterList(this::input)) {
+				new Command("info", "shows the information about current collection", new ParameterList()) {
 					@Override
 					public void execute(Object[] args) throws ExitSignal {
 						System.out.println(collection.toString() + ":");
@@ -117,7 +120,7 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 					}
 				});
 
-		addCommand(new Command("show", "prints info about elements in collection", new ParameterList(this::input)) {
+		addCommand(new Command("show", "prints info about elements in collection", new ParameterList()) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				System.out.println(collection.show());
@@ -125,7 +128,7 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 		});
 
 		addCommand(new Command("min_by_id", "prints info about an element with the smallest id",
-				new ParameterList(this::input)) {
+				new ParameterList()) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				E minById = collection.minById();
@@ -140,14 +143,14 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 		});
 
 		addCommand(
-				new Command("save", "saves the collection to " + storage.toString(), new ParameterList(this::input)) {
+				new Command("save", "saves the collection to " + storage.toString(), new ParameterList()) {
 					@Override
 					public void execute(Object[] args) throws ExitSignal {
 						storage.save(collection);
 					}
 				});
 
-		addCommand(new Command("clear", "clears the collection", new ParameterList(this::input)) {
+		addCommand(new Command("clear", "clears the collection", new ParameterList()) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				collection.clear();
@@ -157,7 +160,7 @@ public class CollectionCommandExecutor<E extends Comparable<E> & Identifiable<K>
 
 		addCommand(new Command("group_counting_by_id",
 				"groups all elements by the value of \"id\" field and prints the number of elements in each group",
-				new ParameterList(this::input)) {
+				new ParameterList()) {
 			@Override
 			public void execute(Object[] args) throws ExitSignal {
 				System.out.println(collection.groupCountingById());

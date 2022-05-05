@@ -23,8 +23,10 @@ public class ArrayDequeManager<E extends Comparable<E> & Identifiable<K> & Creat
 	}
 
 	@Override
-	public void update(K id, E newElement) {
+	public boolean update(K id, E newElement) {
 		E oldElement = get(id);
+
+		if(oldElement == null) return false;
 
 		newElement.setId(id);
 		newElement.setCreationDate(oldElement.getCreationDate());
@@ -32,6 +34,8 @@ public class ArrayDequeManager<E extends Comparable<E> & Identifiable<K> & Creat
 		collection = collection.stream()
 				.map(e -> e.getId().equals(id) ? newElement : e)
 				.collect(ArrayDeque::new, ArrayDeque::add, ArrayDeque::addAll);
+
+		return true;
 	}
 
 	public ArrayDequeManager() {

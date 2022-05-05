@@ -16,6 +16,7 @@ public class MyArrayDequeManager extends ArrayDequeManager<SpaceMarine, Long> {
 	 * @return some weapons sorted... hope it helps.........
 	 */
 	public String printFieldAscendingWeaponType() {
+		if (collection.isEmpty()) return "The collection is empty.";
 		return collection.stream()
 				.sorted(Comparator.comparing(SpaceMarine::getWeaponType))
 				.map(e -> "  Element #" + e.getId().toString() + ": " + e.getWeaponType().toString())

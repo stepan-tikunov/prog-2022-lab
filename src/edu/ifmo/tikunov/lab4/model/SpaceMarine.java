@@ -9,6 +9,7 @@ import edu.ifmo.tikunov.lab4.collection.CreationDateSpecifiable;
 import edu.ifmo.tikunov.lab4.collection.Identifiable;
 import edu.ifmo.tikunov.lab4.composite.Composite;
 import edu.ifmo.tikunov.lab4.composite.CompositeConstructor;
+import edu.ifmo.tikunov.lab4.composite.CompositeParser;
 import edu.ifmo.tikunov.lab4.validate.Constraint;
 import edu.ifmo.tikunov.lab4.validate.ConstraintType;
 import edu.ifmo.tikunov.lab4.validate.Constraints;
@@ -22,15 +23,15 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Identifiable<Long>,
 
 	@FieldName("id")
 	@Constraints({
-			@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = "null"),
-			@Constraint(type = ConstraintType.MORE_THAN, value = "0")
+		@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = "null"),
+		@Constraint(type = ConstraintType.MORE_THAN, value = "0")
 	})
 	private Long id; // !null, >0, unique, auto
 
 	@FieldName("name")
 	@Constraints({
-			@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = "null"),
-			@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = "")
+		@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = ""),
+		@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = " ")
 	})
 	@Description("name")
 	private String name; // !null, !""
@@ -179,16 +180,7 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Identifiable<Long>,
 
 	@Override
 	public String toString() {
-		return "SpaceMarine<" +
-				"id=" + String.valueOf(id) + ", " +
-				"name=" + name + ", " +
-				"coordinates=" + String.valueOf(coordinates) + ", " +
-				"creation_date=" + String.valueOf(creationDate) + ", " +
-				"health=" + String.valueOf(health) + ", " +
-				"category=" + String.valueOf(category) + ", " +
-				"weapon_type=" + String.valueOf(weaponType) + ", " +
-				"melee_weapon=" + String.valueOf(meleeWeapon) + ", " +
-				"chapter=" + String.valueOf(chapter) + ">";
+		return CompositeParser.stringValue(this);
 	}
 
 	public SpaceMarine() {
@@ -196,13 +188,14 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Identifiable<Long>,
 
 	@CompositeConstructor
 	public SpaceMarine(
-			@FieldName("name") String name,
-			@FieldName("coordinates") Coordinates coordinates,
-			@FieldName("health") Double health,
-			@FieldName("category") AstartesCategory category,
-			@FieldName("weapon_type") Weapon weaponType,
-			@FieldName("melee_weapon") MeleeWeapon meleeWeapon,
-			@FieldName("chapter") Chapter chapter) {
+		@FieldName("name") String name,
+		@FieldName("coordinates") Coordinates coordinates,
+		@FieldName("health") Double health,
+		@FieldName("category") AstartesCategory category,
+		@FieldName("weapon_type") Weapon weaponType,
+		@FieldName("melee_weapon") MeleeWeapon meleeWeapon,
+		@FieldName("chapter") Chapter chapter
+	) {
 		this.name = name;
 		this.coordinates = coordinates;
 		this.health = health;

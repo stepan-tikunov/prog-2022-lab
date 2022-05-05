@@ -3,7 +3,7 @@
  *
  * @see edu.ifmo.tikunov.lab4.collection
  * @see edu.ifmo.tikunov.lab4.composite
- * @see edu.ifmo.tikunov.lab4.console
+ * @see edu.ifmo.tikunov.lab4.command
  * @see edu.ifmo.tikunov.lab4.model
  * @see edu.ifmo.tikunov.lab4.storage
  * @see edu.ifmo.tikunov.lab4.storage.file

@@ -1,9 +1,11 @@
-package edu.ifmo.tikunov.lab4.console;
+package edu.ifmo.tikunov.lab4.command;
+
+import java.io.IOException;
 
 /**
  * Thrown when program needs to exit.
  */
-public class ExitSignal extends Exception {
+public class ExitSignal extends IOException {
 	private final int code;
 
 	public int getCode() {

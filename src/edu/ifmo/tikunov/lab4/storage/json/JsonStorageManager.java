@@ -65,6 +65,7 @@ public class JsonStorageManager<E extends Comparable<E> & Identifiable<K> & Crea
 			System.err.println("Couldn't read collection from file, created new empty collection.");
 		} catch (Exception e) {
 			System.err.println("Couldn't parse json file. Created new empty collection");
+			e.printStackTrace();
 		}
 		return defaultCollection;
 	}

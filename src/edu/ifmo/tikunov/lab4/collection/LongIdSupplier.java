@@ -52,7 +52,7 @@ public class LongIdSupplier implements IdSupplier<Long> {
 	}
 
 	public LongIdSupplier() {
-		this(-1L);
+		this(0L);
 	}
 
 	public LongIdSupplier(Long lastUsedId) {

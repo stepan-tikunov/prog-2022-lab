@@ -1,4 +1,4 @@
-package edu.ifmo.tikunov.lab4.console;
+package edu.ifmo.tikunov.lab4.command;
 
 /**
  * Instance of this class represents an executable command.
@@ -9,7 +9,7 @@ public abstract class Command {
     public final String name;
     public final String description;
 
-    protected abstract void execute(Object[] params) throws ExitSignal;
+    public abstract void execute(Object[] params) throws ExitSignal;
 
     /**
      * Returns information about command usage.
@@ -23,28 +23,6 @@ public abstract class Command {
         } else {
             return "usage (interactive): " + name + " " + onlySimple.toString() + "\n"
                     + "usage (one line): " + name + " " + parameterList.toString();
-        }
-    }
-
-    /**
-     * Tests string against command parameter list,
-     * parses parameters and then executes the command.
-     *
-     * @param params string with command parameters
-     * @throws BadParametersException if {@code params} doesn't match parameter list
-     * @throws ExitSignal if command sends exit signal
-     */
-    public void executeIfValid(String params) throws BadParametersException, ExitSignal {
-        if (parameterList.validate(params)) {
-            Object[] parsed = parameterList.parse(params);
-            execute(parsed);
-        } else {
-            if (!parameterList.onlySimple().validate(params)) {
-                throw new BadParametersException("The specified string does not match the parameters list.");
-            }
-
-            Object[] parsed = parameterList.parseInteractive(params);
-            execute(parsed);
         }
     }
 

@@ -1,4 +1,4 @@
-package edu.ifmo.tikunov.lab4.console;
+package edu.ifmo.tikunov.lab4.command;
 
 /**
  * {@code Command}'s parameter class

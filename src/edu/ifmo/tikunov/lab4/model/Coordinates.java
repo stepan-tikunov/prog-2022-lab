@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 
 import edu.ifmo.tikunov.lab4.composite.Composite;
 import edu.ifmo.tikunov.lab4.composite.CompositeConstructor;
+import edu.ifmo.tikunov.lab4.composite.CompositeParser;
 import edu.ifmo.tikunov.lab4.validate.Description;
 import edu.ifmo.tikunov.lab4.validate.FieldName;
 
@@ -41,9 +42,7 @@ public class Coordinates {
 
 	@Override
 	public String toString() {
-		return "Coordinates<" +
-				"x=" + x.toString() + ", " +
-				"y=" + y.toString() + ">";
+		return CompositeParser.stringValue(this);
 	}
 
 	public Coordinates() {

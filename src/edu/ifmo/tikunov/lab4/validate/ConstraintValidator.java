@@ -8,8 +8,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import edu.ifmo.tikunov.lab4.console.BadParametersException;
-import edu.ifmo.tikunov.lab4.console.SimpleParser;
+import edu.ifmo.tikunov.lab4.command.BadParametersException;
+import edu.ifmo.tikunov.lab4.command.SimpleParser;
+import edu.ifmo.tikunov.lab4.composite.CompositeParser;
 
 /**
  * Provides a set of functions to validate {@code @Composite}
@@ -85,7 +86,7 @@ public class ConstraintValidator {
 
 		return Stream.of(constraints)
 				.filter(c -> c != null)
-				.map(c -> c.type().shortValue + (c.value().equals("") ? "<empty>" : c.value()))
+				.map(c -> c.type().shortValue + (c.value().equals("") ? "\"\"" : c.value()))
 				.collect(Collectors.joining(",", " (", ")"));
 	}
 
@@ -140,20 +141,23 @@ public class ConstraintValidator {
 	 * 			otherwise message about all failed constraints
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> String validate(String objString, FieldInfo info, Class<T> paramType) {
-		Constraint[] constraints = info.constraints;
-		String result = "";
+	public static <T> String validateSimple(Object obj, Constraint[] constraints, Class<T> paramType) {
 		try {
-			Comparable<T> obj = (Comparable<T>) SimpleParser.parse(objString, paramType);
+			Comparable<T> comparable = (Comparable<T>) obj;
+			String objString = CompositeParser.stringValue(obj);
 			if (constraints == null)
 				return "";
 
 			for (Constraint constraint : constraints) {
 				try {
-					T value = SimpleParser.parse(constraint.value(), paramType);
-					if (!checkConstraint(constraint.type(), obj, value)) {
-						result += "Constraint failed: the value must be " + constraint.type().toString() + " "
-								+ constraint.value().toString() + ". The specified value is " + objString + "\n";
+					T constraintValue = SimpleParser.parse(constraint.value(), paramType);
+					if (String.class.isAssignableFrom(paramType) && constraint.value().equals(" ")) {
+						constraintValue = null;
+					}
+					String constraintStringValue = SimpleParser.stringValue(constraintValue);
+					if (!checkConstraint(constraint.type(), comparable, constraintValue)) {
+						return "Constraint failed: the value must be " + constraint.type().toString() + " "
+								+ constraintStringValue + ". The specified value is " + objString + "\n";
 					}
 				} catch (BadParametersException e) {
 					throw new RuntimeException(
@@ -161,14 +165,29 @@ public class ConstraintValidator {
 				}
 			}
 
-			return result;
-		} catch (BadParametersException e) {
-			return "Constraint failed: the value must be " + paramType.getSimpleName() + "\n";
+			return "";
 		} catch (ClassCastException e) {
-			throw new RuntimeException(
-					"Class " + paramType.toString() + " is not comparable");
+			throw new RuntimeException("Class " + paramType.getSimpleName() + " is not comparable.");
 		}
 
+	}
+
+	public static <T> String validateNull(Constraint[] constraints, Class<T> paramType) {
+		String result = "";
+		for (Constraint constraint : constraints) {
+			try {
+				T constraintValue = SimpleParser.parse(constraint.value(), paramType);
+				String constraintStringValue = SimpleParser.stringValue(constraintValue);
+				if (!checkConstraint(constraint.type(), null, constraintValue)) {
+					result += "Constraint failed: the value must be " + constraint.type().toString() + " "
+							+ constraintStringValue + ". The specified value is null\n";
+				}
+			} catch (BadParametersException e) {
+				throw new RuntimeException(
+						"Bad value in constraint annotation: " + constraint.value());
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -181,24 +200,22 @@ public class ConstraintValidator {
 	 */
 	public static String validate(Object obj, Class<?> type) {
 		Map<String, FieldInfo> fields = getFieldMap(type);
-		for (Map.Entry<String, FieldInfo> entry : fields.entrySet()) {
-			FieldInfo info = entry.getValue();
+		for (FieldInfo info : fields.values()) {
 			try {
-				try {
+				if (SimpleParser.isSimple(info.field.getType())) {
+					String validationResult = validateSimple(info.field.get(obj), info.constraints, info.field.getType());
+					if (!validationResult.equals("")) {
+						return "Field \"" + info.name + "\": " + validationResult;
+					}
+				} else {
 					String validationResult;
-					if (info.field.get(obj) != null) {
-						String strVal = SimpleParser.stringValue(info.field.get(obj), info.field.getType());
-						validationResult = validate(strVal, info, info.field.getType());
+					if (info.field.get(obj) == null) {
+						validationResult = validateNull(info.constraints, info.field.getType());
 					} else {
-						validationResult = validate("null", info, info.field.getType());
+						validationResult = validate(info.field.get(obj), info.field.getType());
 					}
 					if (!validationResult.equals("")) {
-						return "field \"" + info.name + "\": " + validationResult;
-					}
-				} catch (IllegalArgumentException e) {
-					String validationResult = validate(info.field.get(obj), info.field.getType());
-					if (!validationResult.equals("")) {
-						return "field \"" + info.name + "\": " + validationResult;
+						return "Field \"" + info.name + "\": " + validationResult;
 					}
 				}
 			} catch (IllegalAccessException e) {
@@ -218,10 +235,15 @@ public class ConstraintValidator {
 	 * @return 	empty string if parameter fits all {@code @Constraints},
 	 * 			otherwise message about all failed constraints
 	 */
-	public static <T> String validate(String objString, Parameter param, Class<T> paramType) {
+	public static String validateParameter(String objString, Parameter param, Class<?> paramType) {
 		Map<String, FieldInfo> fields = getFieldMap(param.getDeclaringExecutable().getDeclaringClass());
 		String fieldName = getFieldName(param);
 
-		return validate(objString, fields.get(fieldName), paramType);
+		try {
+			Object obj = SimpleParser.parse(objString, paramType);
+			return validateSimple(obj, fields.get(fieldName).constraints, paramType);
+		} catch (BadParametersException e) {
+			return "Constraint failed: the value must be " + paramType.getSimpleName() + "\n";
+		}
 	}
 }
