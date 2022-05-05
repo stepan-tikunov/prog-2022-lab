@@ -45,9 +45,12 @@ public class SpaceMarine implements Comparable<SpaceMarine>, Identifiable<Long>,
 	private LocalDateTime creationDate; // !null, auto
 
 	@FieldName("health")
-	@Constraint(type = ConstraintType.MORE_THAN, value = "0")
+	@Constraints({
+		@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = "null"),
+		@Constraint(type = ConstraintType.MORE_THAN, value = "0")
+	})
 	@Description("health")
-	private Double health; // nullable, >0
+	private Double health; // !null, >0
 
 	@FieldName("category")
 	@Constraint(type = ConstraintType.NOT_EQUAL_TO, value = "null")

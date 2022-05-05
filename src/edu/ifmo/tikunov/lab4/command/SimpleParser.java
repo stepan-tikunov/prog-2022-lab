@@ -256,7 +256,7 @@ public final class SimpleParser {
         }
 
         if (String.class.isAssignableFrom(type)) {
-            return "\"" + ((String)simple).trim() + "\"";
+            return "\"" + ((String)simple) + "\"";
         }
 
         if (isEnum(type)) {

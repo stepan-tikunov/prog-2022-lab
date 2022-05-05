@@ -80,13 +80,26 @@ public class ConstraintValidator {
 		Map<String, FieldInfo> fields = getFieldMap(param.getDeclaringExecutable().getDeclaringClass());
 		String fieldName = getFieldName(param);
 
-		Constraint[] constraints = fields.get(fieldName).constraints;
+		FieldInfo info = fields.get(fieldName);
+		Constraint[] constraints = info.constraints;
 		if (constraints == null)
 			return "";
 
 		return Stream.of(constraints)
 				.filter(c -> c != null)
-				.map(c -> c.type().shortValue + (c.value().equals("") ? "\"\"" : c.value()))
+				.map(c -> {
+					try {
+						Object parsed = SimpleParser.parse(c.value(), info.field.getType());
+						String strVal = SimpleParser.stringValue(parsed);
+						if (String.class.isAssignableFrom(info.field.getType()) && c.value().equals(" ")) {
+							strVal = "null";
+						}
+						return c.type().shortValue + strVal;
+					} catch (BadParametersException e) {
+						// should never happen
+						return "";
+					}
+				})
 				.collect(Collectors.joining(",", " (", ")"));
 	}
 
