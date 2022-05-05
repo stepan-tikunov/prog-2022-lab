@@ -158,9 +158,12 @@ public class ParameterList {
             .filter(s -> !s.trim().equals(""))
             .collect(Collectors.toList())
             .toArray(new String[0]);
-        try {
+        if (validate(params)) {
             return parse(paramsArray);
-        } catch (BadParametersException e) {
+        } else {
+            if (!onlySimple().validate(params)) {
+                throw new BadParametersException("The specified string does not match the parameter list");
+            }
             return parseInteractive(params);
         }
     }

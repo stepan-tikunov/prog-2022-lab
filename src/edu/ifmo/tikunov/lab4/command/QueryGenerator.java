@@ -15,7 +15,7 @@ public class QueryGenerator {
 			String[] rawQueries = scanner.nextLine().split(";+");
 			List<ExecutionQuery> queries = new ArrayList<>();
 			for (String raw : rawQueries) {
-				String[] parts = raw.split("\\s+");
+				String[] parts = raw.split("\\s+", 2);
 				String commandName = "", paramsRaw = "";
 
 				switch (parts.length) {
