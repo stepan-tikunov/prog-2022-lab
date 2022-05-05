@@ -96,8 +96,6 @@ public class CommandExecutor {
 						.forEach(c -> {
 							System.out.println("  " + c.name + " - " + c.description);
 						});
-
-				System.out.println("\nTo get information about command usage, use \"help [command]\"");
 			}
 		});
 
