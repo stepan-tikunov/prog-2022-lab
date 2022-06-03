@@ -2,40 +2,40 @@
   "type" : "custom_array_deque",
   "id_supplier" : {
     "type" : "long",
-    "last_used_id" : 3
+    "last_used_id" : 2
   },
-  "creation_date" : "2022-05-05T05:59:32.8848123",
+  "creation_date" : "2022-06-03T03:45:00.579609",
   "collection" : [ {
-    "id" : 2,
-    "name" : "asd",
+    "id" : 1,
+    "name" : "ads",
     "coordinates" : {
       "x" : 1.0,
-      "y" : 123.0
+      "y" : 2.0
     },
-    "creation_date" : "2022-05-05T06:50:42.00508",
-    "health" : 321.0,
-    "category" : "ASSAULT",
-    "weapon_type" : "GRAV_GUN",
-    "melee_weapon" : "POWER_FIST",
-    "chapter" : {
-      "name" : "jjj",
-      "parent_legion" : "jjj"
-    }
-  }, {
-    "id" : 3,
-    "name" : "a",
-    "coordinates" : {
-      "x" : null,
-      "y" : null
-    },
-    "creation_date" : "2022-05-05T06:57:19.9963522",
-    "health" : 1.0,
+    "creation_date" : "2022-06-03T03:45:16.5741263",
+    "health" : 123.0,
     "category" : "ASSAULT",
     "weapon_type" : null,
     "melee_weapon" : null,
     "chapter" : {
-      "name" : "null",
+      "name" : "s",
       "parent_legion" : ""
+    }
+  }, {
+    "id" : 2,
+    "name" : "asd",
+    "coordinates" : {
+      "x" : 1.0,
+      "y" : 2.0
+    },
+    "creation_date" : "2022-06-03T03:46:11.3916993",
+    "health" : 1.0,
+    "category" : "ASSAULT",
+    "weapon_type" : "GRAV_GUN",
+    "melee_weapon" : "POWER_BLADE",
+    "chapter" : {
+      "name" : "???",
+      "parent_legion" : "!!!"
     }
   } ]
 }
