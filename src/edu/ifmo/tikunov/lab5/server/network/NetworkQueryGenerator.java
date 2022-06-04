@@ -42,7 +42,7 @@ public class NetworkQueryGenerator implements QueryGenerator, Closeable {
 			byte[] bytes = new byte[4];
 			ByteBuffer buf = ByteBuffer.wrap(bytes);
 			socket.read(buf);
-			buf.rewind();
+			buf.flip();
 			int size = buf.getInt();
 
 			bytes = new byte[size];

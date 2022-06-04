@@ -4,7 +4,7 @@ import java.net.UnknownHostException;
 
 import edu.ifmo.tikunov.lab5.common.command.StdinQueryGenerator;
 
-public class Main {
+public class Client {
 	public static void main(String... args) {
 		try {
 			ClientCommandExecutor executor = new ClientCommandExecutor(new StdinQueryGenerator(), "localhost", 1234);

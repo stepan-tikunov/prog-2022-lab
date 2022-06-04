@@ -17,15 +17,24 @@ import edu.ifmo.tikunov.lab5.server.storage.StorageManager;
  */
 public class ServerCommandExecutor extends CollectionCommandExecutor<SpaceMarine, Long> {
 	protected MyArrayDequeManager collection;
+	protected int port;
 
-	public ServerCommandExecutor(MyArrayDequeManager empty, StorageManager<SpaceMarine, Long> storage) {
+	@Override
+	public void listen() {
+		Server.log.info("Server started. Listening to {}/tcp.", port);
+		super.listen();
+	}
+
+	public ServerCommandExecutor(MyArrayDequeManager empty, StorageManager<SpaceMarine, Long> storage, int port) {
 		super(
-			new ServerQueryGenerator(new NetworkQueryGenerator(1234)),
+			new ServerQueryGenerator(new NetworkQueryGenerator(port)),
 			empty,
 			storage,
 			SpaceMarine.class,
 			Long.class
 		);
+
+		this.port = port;
 
 		try {
 			this.collection = (MyArrayDequeManager) super.collection;

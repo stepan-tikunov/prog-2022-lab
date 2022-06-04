@@ -159,8 +159,8 @@ public final class CompositeParser {
     }
 
     private static String indent(String s) {
-        return s.lines().findFirst().get() + "\n" +
-            s.lines().skip(1)
+        return Stream.of(s.split("\\r?\\n")).findFirst().get() + "\n" +
+            Stream.of(s.split("\\r?\\n")).skip(1)
                 .map(l -> "\t" + l)
                 .collect(Collectors.joining("\n"));
     }
