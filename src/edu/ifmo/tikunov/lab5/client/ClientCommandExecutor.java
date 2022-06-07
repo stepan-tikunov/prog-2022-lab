@@ -25,7 +25,7 @@ public class ClientCommandExecutor extends CommandExecutor {
 			ServerResponse response = reader.get();
 			if (response.matches(CommandSignature[].class)) {
 				Stream.of((CommandSignature[])response.body[0])
-					.forEach(s -> setCommand(new ServerCommand(s)));
+					.forEach(s -> setCommand(new ServerCommand(s, ip, port)));
 			}
 		} catch (IOException e) {
 			System.err.println("The server is down. Try again later.");

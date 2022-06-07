@@ -2,6 +2,7 @@ package edu.ifmo.tikunov.lab5.common.command;
 
 public enum ResponseFormat {
 	NO_MESSAGE(""),
+	CORRUPT_REQUEST(""),
 	STRING("%s"),
 	ADDED("Element was added to the collection."),
 	NOT_MIN("Element was not added to the collection because it is not less than others."),

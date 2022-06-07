@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.StreamCorruptedException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.NotYetBoundException;
@@ -51,10 +52,10 @@ public class NetworkQueryGenerator implements QueryGenerator, Closeable {
 
 			ByteArrayInputStream is = new ByteArrayInputStream(bytes);
 			ObjectInputStream ois = new ObjectInputStream(is);
+			NetworkResponseManager output = new NetworkResponseManager(socket);
 
 			try {
 				Object obj = ois.readObject();
-				NetworkResponseManager output = new NetworkResponseManager(socket);
 				if (obj instanceof CommandRequest) {
 					CommandRequest request = (CommandRequest) obj;
 					request.query.setResponseManager(output);
@@ -84,6 +85,8 @@ public class NetworkQueryGenerator implements QueryGenerator, Closeable {
 					output.close();
 				}
 			} catch (ClassNotFoundException e) {
+			} catch (StreamCorruptedException e) {
+				output.error(ResponseFormat.CORRUPT_REQUEST);
 			}
 		} catch (NotYetBoundException e) {
 			throw new ExitSignal("Port " + port + " is already in use.", 1);

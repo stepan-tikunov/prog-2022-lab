@@ -6,7 +6,7 @@ import edu.ifmo.tikunov.lab5.common.command.StdinQueryGenerator;
 
 public class Client {
 	public static void main(String... args) {
-		String host = "localhost";
+		String host = "51.83.165.24";
 		int port = 1234;
 		try {
 			host = args[0];
