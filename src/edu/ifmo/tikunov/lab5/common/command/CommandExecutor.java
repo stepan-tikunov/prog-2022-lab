@@ -130,7 +130,7 @@ public class CommandExecutor {
 						queriesFromFile.stream()
 							.forEach(queries::addFirst);
 					} catch (ExitSignal e) {
-						// do nothing
+						//do notning
 					}
 				} catch (IOException e) {
 					query.response().error("execute_script: " + e.getMessage());
@@ -142,6 +142,8 @@ public class CommandExecutor {
 	protected void removeCommand(String commandName) {
 		commands.remove(commandName);
 	}
+
+	public void onExit() {}
 
 	/**
 	 * Listens to user commands from standard input and executes them.

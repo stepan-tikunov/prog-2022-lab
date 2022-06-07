@@ -28,6 +28,11 @@ public class CollectionCommandExecutor<
 	protected CollectionManager<E, K> collection;
 	protected StorageManager<E, K> storage;
 
+	@Override
+	public void onExit() {
+		storage.save(collection);
+	}
+
 	@SuppressWarnings("unchecked")
 	public CollectionCommandExecutor(
 		QueryGenerator in,

@@ -44,14 +44,6 @@ public class ServerCommandExecutor extends CollectionCommandExecutor<SpaceMarine
 			super.collection = empty;
 		}
 
-		Command newExitCommand = new CompositionCommand(
-			CommandSignature.exit(),
-			commands.get("save").get(),
-			commands.get("exit").get()
-		);
-
-		setCommand(newExitCommand);
-
 		setCommand(new Command(CommandSignature.printFieldAscendingWeaponTypes()) {
 			@Override
 			public void execute(ExecutionQuery query) throws ExitSignal {

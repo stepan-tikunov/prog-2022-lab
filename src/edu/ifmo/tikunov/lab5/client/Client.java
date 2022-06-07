@@ -6,8 +6,15 @@ import edu.ifmo.tikunov.lab5.common.command.StdinQueryGenerator;
 
 public class Client {
 	public static void main(String... args) {
+		String host = "localhost";
+		int port = 1234;
 		try {
-			ClientCommandExecutor executor = new ClientCommandExecutor(new StdinQueryGenerator(), "localhost", 1234);
+			host = args[0];
+			port = Integer.parseInt(args[1]);
+		} catch (IndexOutOfBoundsException e) {}
+
+		try {
+			ClientCommandExecutor executor = new ClientCommandExecutor(new StdinQueryGenerator(), host, port);
 			executor.listen();
 		} catch (UnknownHostException e) {
 			System.err.println("Host unreachable.");
