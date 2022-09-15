@@ -2,7 +2,6 @@ package edu.ifmo.tikunov.lab5.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import edu.ifmo.tikunov.lab5.client.network.RequestSender;
 import edu.ifmo.tikunov.lab5.client.network.ResponseReader;
@@ -43,7 +42,7 @@ public class ServerCommand extends Command {
 					return;
 				}
 
-				handleResponse(query.response(), reader.get());
+				handleResponse(query.response(), response);
 			}
 		} catch (IOException e) {
 			throw new ExitSignal("Command can't be executed because the server is down. Please try again later.", 1);

@@ -6,24 +6,17 @@ import java.util.Map;
 
 public class StdinQueryGenerator extends InputStreamQueryGenerator {
 	private boolean prefix;
-
 	@Override
-	public List<ExecutionQuery> get(Map<String, Commands> allCommands) throws IOException {
-		if (prefix) {
-			System.out.print("> ");
-		}
-
-		if (in.available() == 0) {
-			prefix = false;
-			return null;
-		}
-
+	public List<ExecutionQuery> get() throws IOException {
+		if (prefix) System.out.print("> ");
+		prefix = false;
+		List<ExecutionQuery> result = super.get();
 		prefix = true;
-		return super.get(allCommands);
+		return result;
 	}
 
-	public StdinQueryGenerator() {
-		super(System.in);
-		this.prefix = true;
+	public StdinQueryGenerator(Map<String, Commands> allCommands) {
+		super(System.in, allCommands);
+		prefix = true;
 	}
 }

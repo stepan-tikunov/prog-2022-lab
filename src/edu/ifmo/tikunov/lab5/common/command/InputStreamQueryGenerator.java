@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class InputStreamQueryGenerator implements QueryGenerator {
+public class InputStreamQueryGenerator extends QueryGenerator {
 	protected Scanner scanner;
 	protected InputStream in;
 
 	@Override
-	public List<ExecutionQuery> get(Map<String, Commands> allCommands) throws IOException {
+	public List<ExecutionQuery> get() throws IOException {
 		if (scanner.hasNextLine()) {
 			String[] rawQueries = scanner.nextLine().split(";+");
 			List<ExecutionQuery> queries = new ArrayList<>();
@@ -59,7 +59,8 @@ public class InputStreamQueryGenerator implements QueryGenerator {
 		}
 	}
 
-	public InputStreamQueryGenerator(InputStream in) {
+	public InputStreamQueryGenerator(InputStream in, Map<String, Commands> allCommands) {
+		super(allCommands);
 		this.in = in;
 		this.scanner = new Scanner(in);
 	}

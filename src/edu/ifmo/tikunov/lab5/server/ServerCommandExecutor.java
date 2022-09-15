@@ -2,7 +2,6 @@ package edu.ifmo.tikunov.lab5.server;
 
 import edu.ifmo.tikunov.lab5.common.command.Command;
 import edu.ifmo.tikunov.lab5.common.command.CommandSignature;
-import edu.ifmo.tikunov.lab5.common.command.CompositionCommand;
 import edu.ifmo.tikunov.lab5.common.command.ExecutionQuery;
 import edu.ifmo.tikunov.lab5.common.command.ExitSignal;
 import edu.ifmo.tikunov.lab5.common.model.SpaceMarine;
@@ -27,7 +26,7 @@ public class ServerCommandExecutor extends CollectionCommandExecutor<SpaceMarine
 
 	public ServerCommandExecutor(MyArrayDequeManager empty, StorageManager<SpaceMarine, Long> storage, int port) {
 		super(
-			new ServerQueryGenerator(new NetworkQueryGenerator(port)),
+			null,
 			empty,
 			storage,
 			SpaceMarine.class,
@@ -50,5 +49,9 @@ public class ServerCommandExecutor extends CollectionCommandExecutor<SpaceMarine
 				query.response().info(collection.printFieldAscendingWeaponType());
 			}
 		});
+
+		NetworkQueryGenerator networkGenerator = new NetworkQueryGenerator(port, commands);
+
+		setQueryGenerator(new ServerQueryGenerator(networkGenerator, commands));
 	}
 }

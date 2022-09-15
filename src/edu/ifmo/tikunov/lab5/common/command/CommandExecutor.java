@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class CommandExecutor {
 	private Deque<ExecutionQuery> queries;
-	private QueryGenerator in;
+	private QueryGenerator generator;
 	protected Map<String, Commands> commands;
 
 	/**
@@ -66,6 +66,10 @@ public class CommandExecutor {
 		}
 	}
 
+	protected void setQueryGenerator(QueryGenerator generator) {
+		this.generator = generator;
+	}
+
 	protected void resetCommands() {
 		commands.clear();
 
@@ -116,13 +120,13 @@ public class CommandExecutor {
 					FileQueryGenerator file;
 					if (params[0] instanceof String) {
 						String filename = (String) params[0];
-						file = new FileQueryGenerator(filename);
+						file = new FileQueryGenerator(filename, commands);
 					} else {
 						file = (FileQueryGenerator) params[0];
 						file.resume();
 					}
 					try {
-						List<ExecutionQuery> queriesFromFile = file.get(commands);
+						List<ExecutionQuery> queriesFromFile = file.get();
 						Collections.reverse(queriesFromFile);
 						file.suspend();
 
@@ -151,7 +155,7 @@ public class CommandExecutor {
 	public void listen() {
 		while (true) {
 			try {
-				List<ExecutionQuery> queriesToAdd = in.get(commands);
+				List<ExecutionQuery> queriesToAdd = generator.get();
 				if (queriesToAdd != null) {
 					queries.addAll(queriesToAdd);
 					executeAll();
@@ -171,7 +175,7 @@ public class CommandExecutor {
 	}
 
 	public CommandExecutor(QueryGenerator in) {
-		this.in = in;
+		this.generator = in;
 
 		commands = new HashMap<>();
 		queries = new ArrayDeque<>();

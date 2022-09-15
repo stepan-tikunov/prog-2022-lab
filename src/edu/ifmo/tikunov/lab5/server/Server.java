@@ -6,7 +6,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.ifmo.tikunov.lab5.common.command.ExecutionQuery;
 import edu.ifmo.tikunov.lab5.common.model.SpaceMarine;
 import edu.ifmo.tikunov.lab5.server.collection.ArrayDequeManager;
 import edu.ifmo.tikunov.lab5.server.collection.LongIdSupplier;

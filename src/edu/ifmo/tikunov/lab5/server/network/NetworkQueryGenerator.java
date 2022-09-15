@@ -26,16 +26,16 @@ import edu.ifmo.tikunov.lab5.common.command.QueryGenerator;
 import edu.ifmo.tikunov.lab5.common.command.ResponseFormat;
 import edu.ifmo.tikunov.lab5.common.command.ServerResponse;
 
-public class NetworkQueryGenerator implements QueryGenerator, Closeable {
+public class NetworkQueryGenerator extends QueryGenerator implements Closeable {
 
 	private ServerSocketChannel server;
 	private int port;
 
 	@Override
-	public List<ExecutionQuery> get(Map<String, Commands> allCommands) throws IOException {
+	public List<ExecutionQuery> get() throws IOException {
 		try {
 			SocketChannel socket = server.accept();
-			
+
 			if (socket == null) {
 				return new ArrayList<>();
 			}
@@ -94,7 +94,8 @@ public class NetworkQueryGenerator implements QueryGenerator, Closeable {
 		return new ArrayList<>();
 	}
 
-	public NetworkQueryGenerator(int port) {
+	public NetworkQueryGenerator(int port, Map<String, Commands> allCommands) {
+		super(allCommands);
 		this.port = port;
 		try {
 			server = ServerSocketChannel.open();

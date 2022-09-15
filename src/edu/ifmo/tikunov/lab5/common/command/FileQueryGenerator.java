@@ -13,9 +13,9 @@ public class FileQueryGenerator extends InputStreamQueryGenerator {
 	private String filename;
 
 	@Override
-	public List<ExecutionQuery> get(Map<String, Commands> allCommands) throws IOException {
+	public List<ExecutionQuery> get() throws IOException {
 		toSkip++;
-		return super.get(allCommands);
+		return super.get();
 	}
 
 	public void suspend() throws IOException {
@@ -29,8 +29,11 @@ public class FileQueryGenerator extends InputStreamQueryGenerator {
 		}
 	}
 
-	public FileQueryGenerator(String filename) throws IOException {
-		super(new BufferedInputStream(new FileInputStream(filename)));
+	public FileQueryGenerator(String filename, Map<String, Commands> allCommands) throws IOException {
+		super(
+			new BufferedInputStream(new FileInputStream(filename)),
+			allCommands
+		);
 		this.filename = filename;
 		toSkip = 0;
 	}

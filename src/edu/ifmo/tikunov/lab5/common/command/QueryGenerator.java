@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public interface QueryGenerator {
-	List<ExecutionQuery> get(Map<String, Commands> allCommands) throws IOException;
+public abstract class QueryGenerator {
+	protected Map<String, Commands> allCommands;
+	public abstract List<ExecutionQuery> get() throws IOException;
+
+	public QueryGenerator(Map<String, Commands> allCommands) {
+		this.allCommands = allCommands;
+	}
 }

@@ -10,8 +10,8 @@ import edu.ifmo.tikunov.lab5.client.network.ResponseReader;
 import edu.ifmo.tikunov.lab5.common.ConnectionRequest;
 import edu.ifmo.tikunov.lab5.common.command.CommandExecutor;
 import edu.ifmo.tikunov.lab5.common.command.CommandSignature;
-import edu.ifmo.tikunov.lab5.common.command.QueryGenerator;
 import edu.ifmo.tikunov.lab5.common.command.ServerResponse;
+import edu.ifmo.tikunov.lab5.common.command.StdinQueryGenerator;
 
 public class ClientCommandExecutor extends CommandExecutor {
 
@@ -33,12 +33,13 @@ public class ClientCommandExecutor extends CommandExecutor {
 		}
 	}
 
-	public ClientCommandExecutor(QueryGenerator in, String host, int port) throws UnknownHostException {
-		super(in);
+	public ClientCommandExecutor(String host, int port) throws UnknownHostException {
+		super(null);
 
 		this.ip = InetAddress.getByName(host);
 		this.port = port;
 
 		fetchCommands();
+		setQueryGenerator(new StdinQueryGenerator(commands));
 	}
 }
