@@ -30,7 +30,8 @@ public class CollectionCommandExecutor<
 
 	@Override
 	public void onExit() {
-		storage.save(collection);
+		if (exitCode == 0)
+			storage.save(collection);
 	}
 
 	@SuppressWarnings("unchecked")

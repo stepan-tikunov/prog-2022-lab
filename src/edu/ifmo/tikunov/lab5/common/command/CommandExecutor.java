@@ -14,6 +14,7 @@ import java.io.IOException;
 public class CommandExecutor {
 	private Deque<ExecutionQuery> queries;
 	private QueryGenerator generator;
+	protected int exitCode = 0;
 	protected Map<String, Commands> commands;
 
 	/**
@@ -168,11 +169,12 @@ public class CommandExecutor {
 					executeAll();
 				}
 			} catch (ExitSignal e) {
-				if (e.getCode() == 0)
+				exitCode = e.getCode();
+				if (exitCode == 0)
 					System.out.println(e.getMessage());
 				else
 					System.err.println(e.getMessage());
-				System.exit(e.getCode());
+				System.exit(exitCode);
 			} catch (Exception e) {
 				System.err.println("Unhandled exception " + e.getClass().toString() + ": " + e.getMessage());
 				e.printStackTrace();
