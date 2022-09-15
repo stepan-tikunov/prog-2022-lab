@@ -18,12 +18,17 @@ public enum ResponseFormat {
 	EMPTY("The collection is empty."),
 	SHOW("All elements in collection:\n%s"),
 	MIN_BY_ID("An element with the least id in the collection (id=%s):\n%s"),
-	CLEARED("The collection was cleared.")
+	CLEARED("The collection was cleared."),
+	GROUPS("Groups of elements with equal value of \"id\" field have following sizes:\n%s")
 	;
 	public String format;
 
 	public String toString() {
 		return format;
+	}
+
+	public String apply(Object... objects) {
+		return String.format(format, objects);
 	}
 
 	private ResponseFormat(String format) {

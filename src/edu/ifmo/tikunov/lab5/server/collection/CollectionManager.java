@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
 import edu.ifmo.tikunov.lab5.common.CreationDateSpecifiable;
+import edu.ifmo.tikunov.lab5.common.IdGroups;
 import edu.ifmo.tikunov.lab5.common.Identifiable;
 import edu.ifmo.tikunov.lab5.common.model.CollectionWrapper;
 import edu.ifmo.tikunov.lab5.common.validate.ConstraintValidator;
@@ -224,35 +226,21 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	}
 
 	/**
-	 * Shows information about each element of the collection.
-	 *
-	 * @return information about collection elements
-	 */
-	public String show() {
-		if (collection.size() == 0) {
-			return "The collection is empty.";
-		}
-
-		return collection.stream()
-				.sorted(ID_COMPARATOR)
-				.map(e -> e.getId().toString() + ": " + e.toString())
-				.collect(Collectors.joining("\n", "All elements in collection:\n", ""));
-	}
-
-	/**
 	 * Groups all elements by value of "id" field
 	 * and shows number of elements in each group.
 	 *
 	 * @return information about groups
 	 */
-	public String groupCountingById() {
-		if (collection.isEmpty()) return "The collection is empty.";
+	public IdGroups<K> groupCountingById() {
+		Map<K, Integer> groups = collection.stream()
+			.sorted(ID_COMPARATOR)
+			.collect(Collectors.toMap(
+				e -> e.getId(),
+				e -> 1
+			)
+		);
 
-		return collection.stream()
-				.sorted(ID_COMPARATOR)
-				.map(e -> "id=" + e.getId().toString() + ": 1 element")
-				.collect(Collectors.joining("\n",
-						"Groups of elements with equal value of \"id\" field have following sizes:\n", ""));
+		return new IdGroups<>(groups);
 	}
 
 	/**

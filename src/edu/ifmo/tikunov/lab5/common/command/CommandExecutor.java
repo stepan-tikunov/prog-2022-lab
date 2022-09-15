@@ -35,10 +35,21 @@ public class CommandExecutor {
 	 * @throws ExitSignal if command sends exit signal during execution
 	 */
 	protected void execute(ExecutionQuery query) throws ExitSignal {
-		Command command = commands.get(query.command).get(query.params);
+		Commands commands = this.commands.get(query.command);
+		Command command = commands.get(query.params);
 		if (command == null) {
-			query.response().error("Command not found: " + query.command);
-			query.response().close();
+			if (query.command.equals("execute_script")) {
+				FileQueryGenerator file = (FileQueryGenerator) query.params[0];
+				try {
+					file.resume();
+					executeScript(file);
+				} catch (IOException e) {
+					query.response().error("execute_script: " + e.getMessage());
+				}
+			} else {
+				query.response().error("Command not found: " + query.command);
+				query.response().close();
+			}
 		} else {
 			try {
 				command.execute(query);
@@ -49,7 +60,6 @@ public class CommandExecutor {
 			}
 		}
 	}
-
 
 	/**
 	 * Adds new command
@@ -70,6 +80,20 @@ public class CommandExecutor {
 		this.generator = generator;
 	}
 
+	protected void executeScript(FileQueryGenerator file) throws IOException {
+		try {
+			List<ExecutionQuery> queriesFromFile = file.get();
+			Collections.reverse(queriesFromFile);
+			file.suspend();
+
+			queries.addFirst(new ExecutionQuery("execute_script", new Object[] {file}));
+			queriesFromFile.stream()
+				.forEach(queries::addFirst);
+		} catch (ExitSignal e) {
+			//do notning
+		}
+	}
+
 	protected void resetCommands() {
 		commands.clear();
 
@@ -80,6 +104,7 @@ public class CommandExecutor {
 
 				commands.values().stream()
 						.flatMap(m -> m.stream())
+						.filter(c -> c.signature.available)
 						.forEach(c -> {
 							query.response().info("  " + c.signature.name + c.signature.parameters.description());
 						});
@@ -93,6 +118,7 @@ public class CommandExecutor {
 			public void execute(ExecutionQuery query) {
 				if (commands.containsKey(query.params[0])) {
 					commands.get(query.params[0]).stream()
+						.filter(c -> c.signature.available)
 						.forEach(c -> {
 							query.response().info(c.signature.name + c.signature.parameters.description() + " - " + c.signature.description);
 							if (!c.signature.parameters.equals(c.signature.parameters.onlySimple())) {
@@ -115,27 +141,10 @@ public class CommandExecutor {
 		setCommand(new Command(CommandSignature.executeScript()) {
 			@Override
 			public void execute(ExecutionQuery query) {
-				Object[] params = query.params;
 				try {
-					FileQueryGenerator file;
-					if (params[0] instanceof String) {
-						String filename = (String) params[0];
-						file = new FileQueryGenerator(filename, commands);
-					} else {
-						file = (FileQueryGenerator) params[0];
-						file.resume();
-					}
-					try {
-						List<ExecutionQuery> queriesFromFile = file.get();
-						Collections.reverse(queriesFromFile);
-						file.suspend();
-
-						queries.addFirst(new ExecutionQuery("execute_script", new Object[] {file}));
-						queriesFromFile.stream()
-							.forEach(queries::addFirst);
-					} catch (ExitSignal e) {
-						//do notning
-					}
+					String filename = (String) query.params[0];
+					FileQueryGenerator file = new FileQueryGenerator(filename, commands);
+					executeScript(file);
 				} catch (IOException e) {
 					query.response().error("execute_script: " + e.getMessage());
 				}

@@ -33,7 +33,7 @@ public class ServerResponse implements Serializable {
 	}
 
 	public String toString() {
-		return String.format(format.format, body);
+		return format.apply(body);
 	}
 
 	public ServerResponse(boolean isError, ResponseFormat format, Object... body) {

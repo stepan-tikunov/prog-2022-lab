@@ -175,7 +175,11 @@ public class CollectionCommandExecutor<
 		setCommand(new Command(CommandSignature.groupCountingById()) {
 			@Override
 			public void execute(ExecutionQuery query) throws ExitSignal {
-				query.response().info(collection.groupCountingById());
+				if (collection.count() == 0) {
+					query.response().info(ResponseFormat.EMPTY);
+				} else {
+					query.response().info(ResponseFormat.GROUPS, collection.groupCountingById());
+				}
 			}
 		});
 	}
