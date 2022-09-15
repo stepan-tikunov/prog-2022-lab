@@ -104,7 +104,6 @@ public class CommandExecutor {
 
 				commands.values().stream()
 						.flatMap(m -> m.stream())
-						.filter(c -> c.signature.available)
 						.forEach(c -> {
 							query.response().info("  " + c.signature.name + c.signature.parameters.description());
 						});
@@ -118,7 +117,6 @@ public class CommandExecutor {
 			public void execute(ExecutionQuery query) {
 				if (commands.containsKey(query.params[0])) {
 					commands.get(query.params[0]).stream()
-						.filter(c -> c.signature.available)
 						.forEach(c -> {
 							query.response().info(c.signature.name + c.signature.parameters.description() + " - " + c.signature.description);
 							if (!c.signature.parameters.equals(c.signature.parameters.onlySimple())) {

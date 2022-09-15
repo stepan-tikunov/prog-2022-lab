@@ -7,7 +7,6 @@ public class CommandSignature implements Serializable {
 	public final String description;
 	public final ParameterList parameters;
 	public final boolean local;
-	public final boolean available;
 
 	public static CommandSignature help() {
 		return new CommandSignature(
@@ -161,7 +160,6 @@ public class CommandSignature implements Serializable {
 		this.description = description;
 		this.parameters = parameters;
 		this.local = local;
-		this.available = available;
 	}
 
 	private CommandSignature(String name, String description, ParameterList parameters, boolean local) {
