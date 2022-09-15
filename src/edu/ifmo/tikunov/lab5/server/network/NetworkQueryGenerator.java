@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.NotYetBoundException;
 import java.nio.channels.ServerSocketChannel;
@@ -25,6 +26,7 @@ import edu.ifmo.tikunov.lab5.common.command.ExitSignal;
 import edu.ifmo.tikunov.lab5.common.command.QueryGenerator;
 import edu.ifmo.tikunov.lab5.common.command.ResponseFormat;
 import edu.ifmo.tikunov.lab5.common.command.ServerResponse;
+import edu.ifmo.tikunov.lab5.server.Server;
 
 public class NetworkQueryGenerator extends QueryGenerator implements Closeable {
 
@@ -39,6 +41,16 @@ public class NetworkQueryGenerator extends QueryGenerator implements Closeable {
 			if (socket == null) {
 				return new ArrayList<>();
 			}
+
+			SocketAddress clientAddress;
+			try {
+				clientAddress = socket.getRemoteAddress();
+			} catch (IOException e) {
+				clientAddress = null;
+			}
+			String clientDescription =
+				clientAddress == null ?
+					"some client" : "client " + String.valueOf(clientAddress);
 
 			byte[] bytes = new byte[4];
 			ByteBuffer buf = ByteBuffer.wrap(bytes);
@@ -66,6 +78,14 @@ public class NetworkQueryGenerator extends QueryGenerator implements Closeable {
 						if (command != null && !command.signature.local) {
 							List<ExecutionQuery> queries = new ArrayList<>();
 							queries.add(request.query);
+							queries
+								.stream()
+								.forEach(q -> {
+									Server.log.info(
+										"Received a '" + q.command +
+										"' command execution query from " + clientDescription + "."
+									);
+								});
 							return queries;
 						}
 					}
@@ -79,6 +99,9 @@ public class NetworkQueryGenerator extends QueryGenerator implements Closeable {
 						.map(c -> c.signature)
 						.collect(Collectors.toList())
 						.toArray(new CommandSignature[0]);
+					Server.log.info(
+						"Received connection request from " + clientDescription + "."
+					);
 					output.send(ServerResponse.info(ResponseFormat.NO_MESSAGE, signatures));
 				} else {
 					output.error("Bad request");
