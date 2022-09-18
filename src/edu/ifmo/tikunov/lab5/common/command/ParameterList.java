@@ -25,7 +25,6 @@ public class ParameterList implements Serializable {
     private transient Class<?>[] simpleTypes;
     private transient String[] simpleDescriptions;
     private transient Boolean[] isSimpleInitially;
-    private transient Scanner in;
 
     private final CommandParameter[] parameters;
 
@@ -46,8 +45,9 @@ public class ParameterList implements Serializable {
         }
     }
 
-    private String getInput(String description) throws ExitSignal {
-        System.out.print("Enter " + description + ": ");
+    private String getInput(String description, Scanner in, boolean interactive) throws ExitSignal {
+        if (interactive)
+            System.out.print("Enter " + description + ": ");
         if (in.hasNextLine()) {
             return in.nextLine();
         } else {
@@ -146,7 +146,7 @@ public class ParameterList implements Serializable {
      * @throws  ExitSignal if user sends delimiter during input
      * @throws  BadParametersException if simple parameters don't match parameter list
      */
-    public Object[] parseInteractive(String params) throws ExitSignal, BadParametersException {
+    public Object[] parseWithInput(String params, Scanner in, boolean interactive) throws ExitSignal, BadParametersException {
         ParameterList simpleParamList = onlySimple();
         if (!simpleParamList.validate(params)) throw new BadParametersException("Bad parameters");
         String[] paramsSplit = Stream.of(params.split("\\s+"))
@@ -163,7 +163,7 @@ public class ParameterList implements Serializable {
             } else {
                 boolean validInput = false;
                 while (!validInput) {
-                    allParams[i] = getInput(simpleDescriptions[i]);
+                    allParams[i] = getInput(simpleDescriptions[i], in, interactive);
                     String message = ConstraintValidator.validateParameter(allParams[i], ctorParameters[i], simpleTypes[i]);
                     validInput = message.equals("");
                     if (!validInput)
@@ -179,6 +179,10 @@ public class ParameterList implements Serializable {
         return parameters.length;
     }
 
+    public int countSimple() {
+        return simpleTypes.length;
+    }
+
     /**
      * Parses parameters from string.
      *
@@ -186,7 +190,7 @@ public class ParameterList implements Serializable {
      * @return  parsed parameters
      * @throws  BadParametersException  if string doesn't match parameter list
      */
-    public Object[] parse(String params) throws BadParametersException, ExitSignal {
+    public Object[] parse(String params, Scanner in, boolean interactive) throws BadParametersException, ExitSignal {
         String[] paramsArray = Stream.of(params.split("\\s+"))
             .filter(s -> !s.trim().equals(""))
             .collect(Collectors.toList())
@@ -197,7 +201,7 @@ public class ParameterList implements Serializable {
             if (!onlySimple().validate(params)) {
                 throw new BadParametersException("The specified string does not match the parameter list");
             }
-            return parseInteractive(params);
+            return parseWithInput(params, in, interactive);
         }
     }
 
@@ -231,8 +235,6 @@ public class ParameterList implements Serializable {
     }
 
     public void build() {
-        in = new Scanner(System.in);
-
         List<Parameter> ctorParameters = Stream.of(parameters)
                 .flatMap(p -> SimpleParser.isSimple(p.type) ? Stream.of((Parameter) null)
                         : CompositeParser.getCtorParameters(p.type).stream())

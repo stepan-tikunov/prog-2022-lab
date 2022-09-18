@@ -5,9 +5,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -39,6 +42,7 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	private LocalDateTime creationDate;
 
 	protected Collection<E> collection;
+	protected Queue<Delta<E>> deltas;
 
 	protected final Comparator<E> COMPARATOR = new Comparator<E>() {
 		@Override
@@ -93,7 +97,14 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	 * @param e		element to replace old
 	 * @return {@code true} if element was updated
 	 */
-	public abstract boolean update(K id, E e);
+	protected abstract boolean updateValue(K id, E e);
+
+	public boolean update(K id, E e) {
+		boolean result = updateValue(id, e);
+		if (result)
+			deltas.add(Delta.update(e));
+		return result;
+	}
 
 	@JsonSetter("id_supplier")
 	public void setIdSupplier(IdSupplier<K> idSupplier) {
@@ -140,7 +151,7 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 			String validationResult = ConstraintValidator.validate(element, element.getClass());
 			if (!validationResult.equals("")) {
 				i.remove();
-				System.err.print("The element with id=" + String.valueOf(element.getId()) + " was removed: " + validationResult);
+				System.err.print("The element with id=" + String.valueOf(element.getId()) + " was removed " + validationResult);
 			} else if (ids.contains(element.getId())) {
 				i.remove();
 				System.err.println("The element with id=" + String.valueOf(element.getId())
@@ -160,6 +171,7 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	public void add(E newElement) {
 		newElement.setId(generateId());
 		collection.add(newElement);
+		deltas.add(Delta.add(newElement));
 	}
 
 	/**
@@ -198,6 +210,7 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	 */
 	public boolean remove(K id) {
 		E e = get(id);
+		deltas.add(Delta.remove(e));
 		return collection.remove(e);
 	}
 
@@ -208,10 +221,13 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 	 * @return	number of removed elements
 	 */
 	public int removeLower(E e) {
-		int count = collection.stream()
-				.filter(el -> (el.compareTo(e) < 0))
-				.map(el -> (collection.remove(el) ? 1 : 0))
-				.collect(Collectors.summingInt(Integer::intValue));
+		Stream<E> removed = collection.stream()
+			.filter(el -> (el.compareTo(e) < 0));
+		int count = removed
+			.map(el -> (collection.remove(el) ? 1 : 0))
+			.collect(Collectors.summingInt(Integer::intValue));
+
+		deltas.add(Delta.remove(removed));
 
 		return count;
 	}
@@ -264,5 +280,6 @@ public abstract class CollectionManager<E extends Comparable<E> & Identifiable<K
 		this.collection = collection;
 		this.creationDate = LocalDateTime.now();
 		this.idSupplier = idSupplier;
+		this.deltas = new LinkedList<>();
 	}
 }

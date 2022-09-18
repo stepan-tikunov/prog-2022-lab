@@ -10,11 +10,14 @@ import java.util.Scanner;
 public class InputStreamQueryGenerator extends QueryGenerator {
 	protected Scanner scanner;
 	protected InputStream in;
+	protected int linesRead;
+	protected boolean interactive;
 
 	@Override
 	public List<ExecutionQuery> get() throws IOException {
 		if (scanner.hasNextLine()) {
 			String[] rawQueries = scanner.nextLine().split(";+");
+			linesRead++;
 			List<ExecutionQuery> queries = new ArrayList<>();
 			for (String raw : rawQueries) {
 				raw = raw.trim();
@@ -46,7 +49,8 @@ public class InputStreamQueryGenerator extends QueryGenerator {
 				}
 
 				try {
-					Object[] params = command.signature.parameters.parse(paramsRaw);
+					Object[] params = command.signature.parameters.parse(paramsRaw, scanner, interactive);
+					linesRead += command.signature.parameters.countSimple();
 					ExecutionQuery query = new ExecutionQuery(commandName, params);
 					queries.add(query);
 				} catch (BadParametersException e) {
@@ -63,6 +67,8 @@ public class InputStreamQueryGenerator extends QueryGenerator {
 		super(allCommands);
 		this.in = in;
 		this.scanner = new Scanner(in);
+		this.linesRead = 0;
+		this.interactive = false;
 	}
 
 }

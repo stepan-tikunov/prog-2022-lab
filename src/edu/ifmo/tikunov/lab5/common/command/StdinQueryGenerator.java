@@ -18,5 +18,6 @@ public class StdinQueryGenerator extends InputStreamQueryGenerator {
 	public StdinQueryGenerator(Map<String, Commands> allCommands) {
 		super(System.in, allCommands);
 		prefix = true;
+		interactive = true;
 	}
 }

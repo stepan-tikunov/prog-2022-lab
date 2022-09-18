@@ -26,7 +26,7 @@ public class ArrayDequeManager<E extends Comparable<E> & Identifiable<K> & Creat
 	}
 
 	@Override
-	public boolean update(K id, E newElement) {
+	protected boolean updateValue(K id, E newElement) {
 		E oldElement = get(id);
 
 		if(oldElement == null) return false;
